@@ -307,7 +307,9 @@ def _id_from_account():
 
 def _parse_release_name(fn):
     """(title, year, season, episode) from a release filename, best-effort."""
+    from urllib.parse import unquote
     name = fn.rsplit("/", 1)[-1]
+    name = unquote(name)  # external URLs (AIOStreams etc.) are percent-encoded
     name = re.sub(r"\.(mkv|mp4|avi|m2ts|mov|ts|wmv|webm)$", "", name, flags=re.I)
     name = name.replace(".", " ").replace("_", " ")
     # Strip leading scene-site tags like 'www.UIndex.org   -   ' that otherwise
