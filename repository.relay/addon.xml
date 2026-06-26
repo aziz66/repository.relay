@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="repository.relay"
+       name="Relay Repository"
+       version="1.0.1"
+       provider-name="aziz66">
+  <extension point="xbmc.addon.repository" name="Relay Repository">
+    <dir>
+      <info compressed="false">https://aziz66.github.io/repository.relay/addons.xml</info>
+      <checksum>https://aziz66.github.io/repository.relay/addons.xml.md5</checksum>
+      <datadir zip="true">https://aziz66.github.io/repository.relay/zips/</datadir>
+    </dir>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Relay add-on repository</summary>
+    <description lang="en_GB">Installs and auto-updates the Relay suite: the video plugin, the subtitle service and the shared library. Your streaming companion - a seamless bridge between Stremio and Kodi.</description>
+    <platform>all</platform>
+    <license>GPL-3.0-or-later</license>
+    <disclaimer lang="en_GB">Relay is an independent project and is not affiliated with, endorsed by, or associated with the Kodi/XBMC Foundation or Stremio. It ships no media, content or stream sources - it only presents add-ons that you choose to install. Do not use it for piracy or to access content you are not authorised to.</disclaimer>
+    <assets>
+      <icon>icon.png</icon>
+    </assets>
+  </extension>
+</addon>

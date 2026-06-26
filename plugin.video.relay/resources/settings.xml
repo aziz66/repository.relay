@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<settings version="1">
+  <section id="plugin.video.relay">
+    <category id="general" label="30000">
+      <group id="1">
+        <setting id="verify_ssl" type="boolean" label="30001" help="30050">
+          <level>0</level>
+          <default>true</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="autoplay" type="boolean" label="30002" help="30051">
+          <level>0</level>
+          <default>false</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="use_ffmpegdirect" type="boolean" label="30009" help="30052">
+          <level>0</level>
+          <default>true</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="return_to_stremio" type="boolean" label="30020">
+          <level>0</level>
+          <default>true</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="return_app" type="string" label="30045" help="30053" parent="return_to_stremio">
+          <level>0</level>
+          <default>com.stremio.one</default>
+          <dependencies>
+            <dependency type="enable">
+              <condition setting="return_to_stremio" operator="is">true</condition>
+            </dependency>
+          </dependencies>
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
+          <control type="edit" format="string"/>
+        </setting>
+        <setting id="resume_prompt" type="boolean" label="30029" help="30054">
+          <level>0</level>
+          <default>true</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="resume_default" type="integer" label="30042" parent="resume_prompt">
+          <level>0</level>
+          <default>0</default>
+          <dependencies>
+            <dependency type="enable">
+              <condition setting="resume_prompt" operator="is">true</condition>
+            </dependency>
+          </dependencies>
+          <constraints>
+            <options>
+              <option label="30043">0</option>
+              <option label="30044">1</option>
+            </options>
+          </constraints>
+          <control type="list" format="integer"/>
+        </setting>
+      </group>
+    </category>
+    <category id="playback" label="30030">
+      <group id="1">
+        <setting id="popup_style" type="integer" label="30039" help="30055">
+          <level>0</level>
+          <default>0</default>
+          <constraints>
+            <options>
+              <option label="30040">0</option>
+              <option label="30041">1</option>
+            </options>
+          </constraints>
+          <control type="list" format="integer"/>
+        </setting>
+        <setting id="skip_segments" type="boolean" label="30031" help="30056">
+          <level>0</level>
+          <default>true</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="skip_auto" type="boolean" label="30032">
+          <level>0</level>
+          <default>false</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="upnext" type="boolean" label="30033" help="30057">
+          <level>0</level>
+          <default>true</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="upnext_tv_secs" type="integer" label="30036" help="30058">
+          <level>0</level>
+          <default>40</default>
+          <constraints>
+            <minimum>10</minimum>
+            <step>5</step>
+            <maximum>300</maximum>
+          </constraints>
+          <control type="slider" format="integer">
+            <popup>false</popup>
+          </control>
+        </setting>
+        <setting id="upnext_movie" type="boolean" label="30037">
+          <level>0</level>
+          <default>false</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="upnext_movie_secs" type="integer" label="30038">
+          <level>0</level>
+          <default>60</default>
+          <constraints>
+            <minimum>10</minimum>
+            <step>10</step>
+            <maximum>600</maximum>
+          </constraints>
+          <control type="slider" format="integer">
+            <popup>false</popup>
+          </control>
+        </setting>
+      </group>
+    </category>
+    <category id="addons" label="30003">
+      <group id="1">
+        <setting id="add_addon" type="action" label="30004">
+          <level>0</level>
+          <data>RunPlugin(plugin://plugin.video.relay/?action=add)</data>
+          <control type="button" format="action">
+            <close>false</close>
+          </control>
+        </setting>
+        <setting id="remove_addon" type="action" label="30005">
+          <level>0</level>
+          <data>RunPlugin(plugin://plugin.video.relay/?action=remove_menu)</data>
+          <control type="button" format="action">
+            <close>false</close>
+          </control>
+        </setting>
+        <setting id="stremio_account_addons" type="boolean" label="30027">
+          <level>0</level>
+          <default>false</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="refresh_account_addons" type="action" label="30028">
+          <level>0</level>
+          <data>RunPlugin(plugin://plugin.video.relay/?action=refresh_account_addons)</data>
+          <control type="button" format="action">
+            <close>false</close>
+          </control>
+        </setting>
+      </group>
+    </category>
+    <category id="integration" label="30006">
+      <group id="1">
+        <setting id="install_tmdbhelper" type="action" label="30007">
+          <level>0</level>
+          <data>RunPlugin(plugin://plugin.video.relay/?action=install_tmdbhelper)</data>
+          <control type="button" format="action">
+            <close>false</close>
+          </control>
+        </setting>
+        <setting id="optimize_buffer" type="action" label="30008" help="30059">
+          <level>0</level>
+          <data>RunPlugin(plugin://plugin.video.relay/?action=optimize_buffer)</data>
+          <control type="button" format="action">
+            <close>false</close>
+          </control>
+        </setting>
+        <setting id="clear_cache" type="action" label="30018">
+          <level>0</level>
+          <data>RunPlugin(plugin://plugin.video.relay/?action=clear_cache)</data>
+          <control type="button" format="action">
+            <close>false</close>
+          </control>
+        </setting>
+        <setting id="backup_config" type="action" label="30034" help="30060">
+          <level>0</level>
+          <data>RunPlugin(plugin://plugin.video.relay/?action=backup_config)</data>
+          <control type="button" format="action">
+            <close>false</close>
+          </control>
+        </setting>
+        <setting id="restore_config" type="action" label="30035">
+          <level>0</level>
+          <data>RunPlugin(plugin://plugin.video.relay/?action=restore_config)</data>
+          <control type="button" format="action">
+            <close>false</close>
+          </control>
+        </setting>
+        <setting id="font_url" type="string" label="30010" help="30061">
+          <level>0</level>
+          <default>https://github.com/google/fonts/raw/main/ofl/notonaskharabic/NotoNaskhArabic%5Bwght%5D.ttf</default>
+          <control type="edit" format="string"/>
+        </setting>
+        <setting id="download_font" type="action" label="30011">
+          <level>0</level>
+          <data>RunPlugin(plugin://plugin.video.relay/?action=download_font)</data>
+          <control type="button" format="action">
+            <close>false</close>
+          </control>
+        </setting>
+      </group>
+    </category>
+    <category id="trakt" label="30012">
+      <group id="1">
+        <setting id="trakt_scrobble" type="boolean" label="30013" help="30062">
+          <level>0</level>
+          <default>true</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="trakt_auth" type="action" label="30014">
+          <level>0</level>
+          <data>RunPlugin(plugin://plugin.video.relay/?action=trakt_auth)</data>
+          <control type="button" format="action">
+            <close>false</close>
+          </control>
+        </setting>
+        <setting id="trakt_logout" type="action" label="30015">
+          <level>0</level>
+          <data>RunPlugin(plugin://plugin.video.relay/?action=trakt_logout)</data>
+          <control type="button" format="action">
+            <close>false</close>
+          </control>
+        </setting>
+        <setting id="trakt_client_id" type="string" label="30016" help="30046">
+          <level>0</level>
+          <default></default>
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
+          <control type="edit" format="string"/>
+        </setting>
+        <setting id="trakt_secret" type="string" label="30017" help="30046">
+          <level>0</level>
+          <default></default>
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
+          <control type="edit" format="string"/>
+        </setting>
+      </group>
+    </category>
+    <category id="stremio" label="30021">
+      <group id="1">
+        <setting id="stremio_login" type="action" label="30024">
+          <level>0</level>
+          <data>RunPlugin(plugin://plugin.video.relay/?action=stremio_login)</data>
+          <control type="button" format="action">
+            <close>false</close>
+          </control>
+        </setting>
+        <setting id="stremio_logout" type="action" label="30025">
+          <level>0</level>
+          <data>RunPlugin(plugin://plugin.video.relay/?action=stremio_logout)</data>
+          <control type="button" format="action">
+            <close>false</close>
+          </control>
+        </setting>
+        <setting id="stremio_sync" type="boolean" label="30026" help="30063">
+          <level>0</level>
+          <default>true</default>
+          <control type="toggle"/>
+        </setting>
+      </group>
+    </category>
+  </section>
+</settings>

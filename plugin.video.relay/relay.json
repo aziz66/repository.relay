@@ -1,0 +1,8 @@
+{
+    "name": "Relay (Auto-play)",
+    "plugin": "plugin.video.relay",
+    "priority": 100,
+    "is_resolvable": "true",
+    "play_movie": "plugin://plugin.video.relay/?action=play&type=movie&id={imdb}",
+    "play_episode": "plugin://plugin.video.relay/?action=play&type=series&id={imdb}:{season}:{episode}"
+}

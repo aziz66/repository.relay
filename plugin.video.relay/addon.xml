@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.video.relay"
+       name="Relay"
+       version="0.1.13"
+       provider-name="aziz66">
+  <requires>
+    <import addon="xbmc.python" version="3.0.0"/>
+    <import addon="script.module.relay" version="0.1.2"/>
+    <import addon="inputstream.adaptive" version="20.0.0" optional="true"/>
+    <import addon="inputstream.ffmpegdirect" version="20.0.0" optional="true"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" library="default.py">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.service" library="service.py"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Your streaming companion - a seamless bridge between Stremio and Kodi</summary>
+    <description lang="en_GB">Add the manifest URL of any Stremio addon (catalog/meta/stream). Relay reads each manifest's declared resources and presents catalogs, metadata and streams natively in Kodi. Subtitles are handled by the companion service.subtitles.relay.</description>
+    <platform>all</platform>
+    <license>GPL-3.0-or-later</license>
+    <news>v0.1.13 - Skip / Up Next / Movie-end prompts now highlight the override button (one press flips it; wait it out for the timeout default), matching the resume prompt.
+v0.1.12 - GPL license, disclaimer; Trakt now needs your own app (see README).</news>
+    <disclaimer lang="en_GB">Relay is an independent project and is not affiliated with, endorsed by, or associated with the Kodi/XBMC Foundation or Stremio. It ships no media, content or stream sources - it only presents add-ons that you choose to install. Do not use it for piracy or to access content you are not authorised to.</disclaimer>
+    <assets>
+      <icon>resources/icon.png</icon>
+    </assets>
+  </extension>
+</addon>

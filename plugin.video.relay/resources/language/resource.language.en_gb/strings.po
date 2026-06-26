@@ -1,0 +1,249 @@
+# Relay - English (en_GB)
+msgid ""
+msgstr ""
+"Project-Id-Version: plugin.video.relay\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: en_GB\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgctxt "#30000"
+msgid "General"
+msgstr ""
+
+msgctxt "#30001"
+msgid "Verify SSL certificates"
+msgstr ""
+
+msgctxt "#30002"
+msgid "Auto-play best stream"
+msgstr ""
+
+msgctxt "#30003"
+msgid "Add-ons"
+msgstr ""
+
+msgctxt "#30004"
+msgid "Add add-on (manifest URL)"
+msgstr ""
+
+msgctxt "#30005"
+msgid "Remove add-on"
+msgstr ""
+
+msgctxt "#30006"
+msgid "Integration"
+msgstr ""
+
+msgctxt "#30007"
+msgid "Install TMDbHelper player"
+msgstr ""
+
+msgctxt "#30008"
+msgid "Optimize playback buffering"
+msgstr ""
+
+msgctxt "#30009"
+msgid "Faster direct streams (ffmpegdirect)"
+msgstr ""
+
+msgctxt "#30010"
+msgid "Subtitle font URL"
+msgstr ""
+
+msgctxt "#30011"
+msgid "Download & set subtitle font"
+msgstr ""
+
+msgctxt "#30012"
+msgid "Trakt"
+msgstr ""
+
+msgctxt "#30013"
+msgid "Scrobble to Trakt"
+msgstr ""
+
+msgctxt "#30014"
+msgid "Authorize Trakt"
+msgstr ""
+
+msgctxt "#30015"
+msgid "Sign out of Trakt"
+msgstr ""
+
+msgctxt "#30016"
+msgid "Trakt app Client ID (required for Trakt)"
+msgstr ""
+
+msgctxt "#30017"
+msgid "Trakt app Client Secret (required for Trakt)"
+msgstr ""
+
+msgctxt "#30018"
+msgid "Clear cache"
+msgstr ""
+
+msgctxt "#30020"
+msgid "Return to app after playback"
+msgstr ""
+
+msgctxt "#30021"
+msgid "Stremio account"
+msgstr ""
+
+msgctxt "#30022"
+msgid "Email"
+msgstr ""
+
+msgctxt "#30023"
+msgid "Password"
+msgstr ""
+
+msgctxt "#30024"
+msgid "Sign in to Stremio"
+msgstr ""
+
+msgctxt "#30025"
+msgid "Sign out of Stremio"
+msgstr ""
+
+msgctxt "#30026"
+msgid "Sync progress to Stremio"
+msgstr ""
+
+msgctxt "#30027"
+msgid "Use my account add-ons"
+msgstr ""
+
+msgctxt "#30028"
+msgid "Refresh account add-ons"
+msgstr ""
+
+msgctxt "#30029"
+msgid "Ask to resume from saved progress"
+msgstr ""
+
+msgctxt "#30030"
+msgid "Playback"
+msgstr ""
+
+msgctxt "#30031"
+msgid "Skip intro / recap"
+msgstr ""
+
+msgctxt "#30032"
+msgid "Auto-skip (no prompt)"
+msgstr ""
+
+msgctxt "#30033"
+msgid "Up Next (TV shows)"
+msgstr ""
+
+msgctxt "#30034"
+msgid "Back up configuration"
+msgstr ""
+
+msgctxt "#30035"
+msgid "Restore configuration"
+msgstr ""
+
+msgctxt "#30036"
+msgid "TV: lead time (seconds)"
+msgstr ""
+
+msgctxt "#30037"
+msgid "Movies: stop at credits"
+msgstr ""
+
+msgctxt "#30038"
+msgid "Movies: lead time (seconds)"
+msgstr ""
+
+msgctxt "#30039"
+msgid "Pop-up style"
+msgstr ""
+
+msgctxt "#30040"
+msgid "Minimal overlay (bottom right)"
+msgstr ""
+
+msgctxt "#30041"
+msgid "Classic Kodi dialogs"
+msgstr ""
+
+msgctxt "#30042"
+msgid "Resume timer default"
+msgstr ""
+
+msgctxt "#30043"
+msgid "Resume from saved position"
+msgstr ""
+
+msgctxt "#30044"
+msgid "Start from beginning"
+msgstr ""
+
+msgctxt "#30045"
+msgid "Return-to app (package id)"
+msgstr ""
+
+msgctxt "#30050"
+msgid "Off sends embedded keys/passwords unverified."
+msgstr ""
+
+msgctxt "#30051"
+msgid "Skips the source chooser."
+msgstr ""
+
+msgctxt "#30052"
+msgid "Uses inputstream.ffmpegdirect for quicker start/seek."
+msgstr ""
+
+msgctxt "#30053"
+msgid "e.g. com.stremio.one, com.nuvio.app"
+msgstr ""
+
+msgctxt "#30054"
+msgid "10s prompt; defaults to resume."
+msgstr ""
+
+msgctxt "#30055"
+msgid "Style for resume / skip / Up Next prompts."
+msgstr ""
+
+msgctxt "#30056"
+msgid "Uses IntroDB community timestamps."
+msgstr ""
+
+msgctxt "#30057"
+msgid "Plays the next episode at the credits."
+msgstr ""
+
+msgctxt "#30058"
+msgid "Used when there's no outro data."
+msgstr ""
+
+msgctxt "#30059"
+msgid "Writes advancedsettings.xml."
+msgstr ""
+
+msgctxt "#30060"
+msgid "Add-ons, tokens, history."
+msgstr ""
+
+msgctxt "#30061"
+msgid ".ttf/.otf - default: Noto Naskh Arabic."
+msgstr ""
+
+msgctxt "#30062"
+msgid "Syncs watch history + progress."
+msgstr ""
+
+msgctxt "#30063"
+msgid "Continue Watching + watched."
+msgstr ""
+
+msgctxt "#30046"
+msgid "Create a free Trakt app and paste its key/secret here - see the README"
+msgstr ""

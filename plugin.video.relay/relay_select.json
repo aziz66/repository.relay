@@ -1,0 +1,8 @@
+{
+    "name": "Relay (Choose source)",
+    "plugin": "plugin.video.relay",
+    "priority": 100,
+    "is_resolvable": "true",
+    "play_movie": "plugin://plugin.video.relay/?action=streams_select&type=movie&id={imdb}",
+    "play_episode": "plugin://plugin.video.relay/?action=streams_select&type=series&id={imdb}:{season}:{episode}"
+}

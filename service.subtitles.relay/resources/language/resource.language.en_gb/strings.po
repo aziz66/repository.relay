@@ -1,0 +1,29 @@
+# Relay Subtitles - English (en_GB)
+msgid ""
+msgstr ""
+"Project-Id-Version: service.subtitles.relay\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: en_GB\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgctxt "#30000"
+msgid "General"
+msgstr ""
+
+msgctxt "#30001"
+msgid "Auto-download a subtitle on playback (preferred language)"
+msgstr ""
+
+msgctxt "#30002"
+msgid "Prefetch next episode's sources during playback (instant binge)"
+msgstr ""
+
+msgctxt "#30003"
+msgid "Fix Arabic/RTL punctuation placement (.,?! at the correct end)"
+msgstr ""
+
+msgctxt "#30004"
+msgid "Capture helper URL (optional - blank uses your Stremio account instead)"
+msgstr ""

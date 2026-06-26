@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Relay minimal overlay popup: bottom-right card, shared by the resume /
+     skip-intro / up-next / movie-end / tracking prompts. All geometry is
+     1080p; Kodi scales it on other resolutions. Textures are a plain white
+     png tinted via colordiffuse, so the whole theme is defined right here. -->
+<window type="dialog">
+  <zorder>99</zorder>
+  <animation effect="slide" start="620,0" end="0,0" time="220" tween="cubic" easing="out">WindowOpen</animation>
+  <animation effect="slide" start="0,0" end="620,0" time="160" tween="cubic" easing="in">WindowClose</animation>
+  <defaultcontrol always="true">201</defaultcontrol>
+  <controls>
+    <control type="group">
+      <left>1330</left>
+      <top>856</top>
+      <!-- card -->
+      <control type="image">
+        <left>0</left><top>0</top><width>530</width><height>154</height>
+        <texture colordiffuse="F214141B">relay/panel.png</texture>
+      </control>
+      <!-- accent edge -->
+      <control type="image">
+        <left>0</left><top>0</top><width>5</width><height>154</height>
+        <texture colordiffuse="FF00C7B0">relay/panel.png</texture>
+      </control>
+      <!-- episode-still backdrop (Up Next only; dimmed, set + shown from python,
+           drawn under the text so it stays readable) -->
+      <control type="image" id="105">
+        <left>210</left><top>0</top><width>320</width><height>154</height>
+        <aspectratio aligny="center">scale</aspectratio>
+        <texture colordiffuse="40FFFFFF"></texture>
+        <visible>false</visible>
+      </control>
+      <!-- title -->
+      <control type="label" id="101">
+        <left>26</left><top>14</top><width>478</width><height>30</height>
+        <font>font27</font>
+        <textcolor>FFFFFFFF</textcolor>
+        <label></label>
+      </control>
+      <!-- subtitle -->
+      <control type="label" id="102">
+        <left>26</left><top>48</top><width>478</width><height>24</height>
+        <font>font12</font>
+        <textcolor>99FFFFFF</textcolor>
+        <label></label>
+      </control>
+      <!-- primary button (timeout default) -->
+      <control type="button" id="201">
+        <left>26</left><top>84</top><width>234</width><height>46</height>
+        <font>font13</font>
+        <texturenofocus colordiffuse="26FFFFFF">relay/panel.png</texturenofocus>
+        <texturefocus colordiffuse="FF00C7B0">relay/panel.png</texturefocus>
+        <textcolor>DDFFFFFF</textcolor>
+        <focusedcolor>FF10100F</focusedcolor>
+        <align>center</align><aligny>center</aligny>
+        <onleft>202</onleft><onright>202</onright>
+        <label></label>
+      </control>
+      <!-- secondary button -->
+      <control type="button" id="202">
+        <left>270</left><top>84</top><width>234</width><height>46</height>
+        <font>font13</font>
+        <texturenofocus colordiffuse="26FFFFFF">relay/panel.png</texturenofocus>
+        <texturefocus colordiffuse="FF00C7B0">relay/panel.png</texturefocus>
+        <textcolor>DDFFFFFF</textcolor>
+        <focusedcolor>FF10100F</focusedcolor>
+        <align>center</align><aligny>center</aligny>
+        <onleft>201</onleft><onright>201</onright>
+        <label></label>
+      </control>
+      <!-- countdown bar (width driven from python) -->
+      <control type="image" id="301">
+        <left>0</left><top>150</top><width>530</width><height>4</height>
+        <texture colordiffuse="CC00C7B0">relay/panel.png</texture>
+      </control>
+    </control>
+  </controls>
+</window>
