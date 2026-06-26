@@ -310,6 +310,10 @@ def _parse_release_name(fn):
     name = fn.rsplit("/", 1)[-1]
     name = re.sub(r"\.(mkv|mp4|avi|m2ts|mov|ts|wmv|webm)$", "", name, flags=re.I)
     name = name.replace(".", " ").replace("_", " ")
+    # Strip leading scene-site tags like 'www.UIndex.org   -   ' that otherwise
+    # poison the title search (they become bogus leading tokens).
+    name = re.sub(r"^\s*www\s+\S+\s+(?:com|org|net|info|tv|me|to|cc|xyz|club|app)\b[\s_-]*",
+                  "", name, flags=re.I)
     m = re.search(r"[Ss](\d{1,2})[ ._-]?[Ee](\d{1,2})|\b(\d{1,2})x(\d{1,2})\b", name)
     if m:
         s, e = (m.group(1), m.group(2)) if m.group(1) else (m.group(3), m.group(4))
@@ -324,35 +328,57 @@ def _parse_release_name(fn):
     return name.strip(" -"), None, None, None
 
 
+def _title_tokens(s):
+    return set(re.findall(r"[a-z0-9]+", (s or "").lower()))
+
+
+def _meta_matches(mt, norm, norm_tokens, year):
+    """Confident match test for a catalog/Cinemeta result:
+      - exact title (case-insensitive), OR
+      - the parsed YEAR matches the result's year AND every token of the
+        result's name appears in the filename (its name is fully contained).
+    The year+contained-name rule catches messy release names (site tags, "A
+    Marvel Television Special Presentation -- ...") without the loose "first
+    result" guessing that once matched 'FROM 2026' to 'From Scratch' - series
+    carry no parsed year here, so they stay exact-only."""
+    name = str(mt.get("name") or "").strip().lower()
+    if not name:
+        return False
+    if name == norm:
+        return True
+    if year:
+        ry = str(mt.get("releaseInfo") or mt.get("year") or "")
+        nt = _title_tokens(name)
+        if str(year) in ry and len(nt) >= 2 and nt <= norm_tokens:
+            return True
+    return False
+
+
 def _resolve_imdb(title, year, ctype):
     """Look up an IMDB id by searching a configured catalog (AIOMetadata etc.).
 
-    CONFIDENT-ONLY: returns a match ONLY on an exact title (case-insensitive)
-    or an exact title+year. The fuzzy "first search result" fallback was
-    removed - it could confidently return the WRONG show (e.g. 'FROM 2026'
-    matching 'From Scratch'). A non-confident filename now yields None so the
-    chain falls through to the Stremio account (exact) and then moviehash
-    subtitles, rather than silently mis-identifying."""
+    CONFIDENT-ONLY (see :func:`_meta_matches`): exact title, or year + the
+    result's name fully contained in the filename. The fuzzy "first search
+    result" fallback was removed - it could confidently return the WRONG show.
+    A non-confident filename yields None so the chain falls through to the
+    Stremio account (exact) and then moviehash subtitles."""
     if not title:
         return None
     norm = title.strip().lower()
+    norm_tokens = _title_tokens(norm)
 
     def _confident(metas):
         for mt in (metas or [])[:8]:
             cid = mt.get("id", "")
             imdb = mt.get("imdb_id") or (cid if cid.startswith("tt") else "")
-            if not imdb:
-                continue
-            if str(mt.get("name") or "").strip().lower() == norm:
-                return imdb              # exact title match
-            if year and str(year) in str(mt.get("releaseInfo") or mt.get("year") or ""):
-                return imdb              # exact title+year match
+            if imdb and _meta_matches(mt, norm, norm_tokens, year):
+                return imdb
         return None
 
     # 1. Cinemeta - the canonical IMDB-id catalog. It's deduped out of the
     #    user's browse catalogs (official add-on), but it's the most reliable
     #    title->id source, so query it directly here. No config needed.
-    imdb = _cinemeta_id(title, ctype)
+    imdb = _cinemeta_id(title, ctype, year)
     if imdb:
         return imdb
     # 2. the user's configured search-capable catalogs (AIOMetadata etc.)
@@ -370,24 +396,25 @@ def _resolve_imdb(title, year, ctype):
 _CINEMETA = "https://v3-cinemeta.strem.io"
 
 
-def _cinemeta_id(title, ctype):
-    """Exact-title id from Cinemeta's search (canonical IMDB ids). None if no
-    exact (case-insensitive) name match. Cached per query; never raises."""
+def _cinemeta_id(title, ctype, year=None):
+    """Confident id from Cinemeta's search (canonical IMDB ids): exact title,
+    or year + name-contained-in-filename (see :func:`_meta_matches`). None
+    otherwise. Cached per (query, year); never raises."""
     from urllib.parse import quote
-    key = "cinemeta::%s::%s" % (ctype, title.lower())
+    key = "cinemeta2::%s::%s::%s" % (ctype, title.lower(), year or "")
     hit, val = client.disk_get(key)
     if hit:
         return val or None
     url = "%s/catalog/%s/top/search=%s.json" % (_CINEMETA, ctype, quote(title))
     data = client.fetch_json(url, timeout=6)
     norm = title.strip().lower()
+    norm_tokens = _title_tokens(norm)
     out = None
     for mt in ((data or {}).get("metas") or [])[:8]:
-        if str(mt.get("name") or "").strip().lower() == norm:
-            cid = mt.get("id", "")
-            if cid.startswith("tt"):
-                out = cid
-                break
+        cid = mt.get("id", "")
+        if cid.startswith("tt") and _meta_matches(mt, norm, norm_tokens, year):
+            out = cid
+            break
     client.disk_set(key, out or "", 86400)
     return out
 
@@ -398,7 +425,7 @@ def _id_from_filename():
     fn = _playing_filename()
     if not fn:
         return None, None
-    key = "fnid3::" + fn  # v3: bumped when resolver logic changes, to orphan stale (negative) caches
+    key = "fnid4::" + fn  # v4: bumped when resolver logic changes, to orphan stale (negative) caches
     hit, val = client.disk_get(key)
     if hit and val:
         return (val[0] or None), (val[1] or None)
