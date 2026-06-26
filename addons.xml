@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addons>
+<addon id="repository.relay"
+       name="Relay Repository"
+       version="1.0.1"
+       provider-name="aziz66">
+  <extension point="xbmc.addon.repository" name="Relay Repository">
+    <dir>
+      <info compressed="false">https://aziz66.github.io/repository.relay/addons.xml</info>
+      <checksum>https://aziz66.github.io/repository.relay/addons.xml.md5</checksum>
+      <datadir zip="true">https://aziz66.github.io/repository.relay/zips/</datadir>
+    </dir>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Relay add-on repository</summary>
+    <description lang="en_GB">Installs and auto-updates the Relay suite: the video plugin, the subtitle service and the shared library. Your streaming companion - a seamless bridge between Stremio and Kodi.</description>
+    <platform>all</platform>
+    <license>GPL-3.0-or-later</license>
+    <disclaimer lang="en_GB">Relay is an independent project and is not affiliated with, endorsed by, or associated with the Kodi/XBMC Foundation or Stremio. It ships no media, content or stream sources - it only presents add-ons that you choose to install. Do not use it for piracy or to access content you are not authorised to.</disclaimer>
+    <assets>
+      <icon>icon.png</icon>
+    </assets>
+  </extension>
+</addon>
+<addon id="script.module.relay"
+       name="Relay Library"
+       version="0.1.3"
+       provider-name="aziz66">
+  <requires>
+    <import addon="xbmc.python" version="3.0.0"/>
+    <import addon="script.module.requests" version="2.22.0" optional="true"/>
+  </requires>
+  <extension point="xbmc.python.module" library="lib"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Shared Stremio addon-protocol client</summary>
+    <description lang="en_GB">Common library used by plugin.video.relay and service.subtitles.relay. Indexes Stremio addon manifests and routes catalog/meta/stream/subtitles requests by declared resource, type and idPrefix.</description>
+    <platform>all</platform>
+    <license>GPL-3.0-or-later</license>
+    <disclaimer lang="en_GB">Relay is an independent project and is not affiliated with, endorsed by, or associated with the Kodi/XBMC Foundation or Stremio. It ships no media, content or stream sources - it only presents add-ons that you choose to install. Do not use it for piracy or to access content you are not authorised to.</disclaimer>
+    <assets>
+      <icon>resources/icon.png</icon>
+    </assets>
+  </extension>
+</addon>
+<addon id="plugin.video.relay"
+       name="Relay"
+       version="0.1.12"
+       provider-name="aziz66">
+  <requires>
+    <import addon="xbmc.python" version="3.0.0"/>
+    <import addon="script.module.relay" version="0.1.2"/>
+    <import addon="inputstream.adaptive" version="20.0.0" optional="true"/>
+    <import addon="inputstream.ffmpegdirect" version="20.0.0" optional="true"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" library="default.py">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.service" library="service.py"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Your streaming companion - a seamless bridge between Stremio and Kodi</summary>
+    <description lang="en_GB">Add the manifest URL of any Stremio addon (catalog/meta/stream). Relay reads each manifest's declared resources and presents catalogs, metadata and streams natively in Kodi. Subtitles are handled by the companion service.subtitles.relay.</description>
+    <platform>all</platform>
+    <license>GPL-3.0-or-later</license>
+    <news>v0.1.12 - GPL license, disclaimer; Trakt now needs your own app (see README).</news>
+    <disclaimer lang="en_GB">Relay is an independent project and is not affiliated with, endorsed by, or associated with the Kodi/XBMC Foundation or Stremio. It ships no media, content or stream sources - it only presents add-ons that you choose to install. Do not use it for piracy or to access content you are not authorised to.</disclaimer>
+    <assets>
+      <icon>resources/icon.png</icon>
+    </assets>
+  </extension>
+</addon>
+<addon id="service.subtitles.relay"
+       name="Relay Subtitles"
+       version="0.1.14"
+       provider-name="aziz66">
+  <requires>
+    <import addon="xbmc.python" version="3.0.0"/>
+    <import addon="script.module.relay" version="0.1.2"/>
+    <import addon="plugin.video.relay" version="0.1.1"/>
+  </requires>
+  <extension point="xbmc.subtitle.module" library="service.py"/>
+  <extension point="xbmc.service" library="autodownload.py"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Subtitles from your Stremio addons</summary>
+    <description lang="en_GB">During playback, searches every configured Stremio addon that declares a 'subtitles' resource (shared with Relay) for the currently playing IMDB title and offers the results in Kodi's subtitle dialog.</description>
+    <platform>all</platform>
+    <license>GPL-3.0-or-later</license>
+    <news>v0.1.14 - GPL license, disclaimer; Cinemeta filename resolver; boot-race retry.</news>
+    <disclaimer lang="en_GB">Relay is an independent project and is not affiliated with, endorsed by, or associated with the Kodi/XBMC Foundation or Stremio. It ships no media, content or stream sources - it only presents add-ons that you choose to install. Do not use it for piracy or to access content you are not authorised to.</disclaimer>
+    <assets>
+      <icon>resources/icon.png</icon>
+    </assets>
+  </extension>
+</addon>
+</addons>
