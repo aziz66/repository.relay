@@ -82,6 +82,27 @@ def build_addons_xml(addon_dirs):
     return "\n".join(parts)
 
 
+def write_dir_index(path, header=""):
+    """Write an index.html that Kodi's HTTP file browser can navigate.
+
+    Kodi's CHTTPDirectory parses <a href="child"> links and only follows
+    SINGLE-SEGMENT children (sub-dirs end with '/'), so each directory needs
+    its own listing of its immediate children - GitHub Pages won't autogenerate
+    one. Without this, "Install from zip file" shows an empty folder. The
+    optional ``header`` HTML (used on the root) is shown to humans; the link
+    list below it is what Kodi reads."""
+    names = sorted(n for n in os.listdir(path) if n != "index.html")
+    links = []
+    for n in names:
+        slash = "/" if os.path.isdir(os.path.join(path, n)) else ""
+        links.append("<a href=\"%s%s\">%s%s</a><br>" % (n, slash, n, slash))
+    html = ("<!DOCTYPE html><html><head><meta charset=\"utf-8\">"
+            "<title>Relay Repository</title></head><body>%s\n%s\n</body></html>\n"
+            % (header, "\n".join(links)))
+    with open(os.path.join(path, "index.html"), "w", encoding="utf-8") as fh:
+        fh.write(html)
+
+
 def main():
     os.makedirs(ZIPS, exist_ok=True)
     print("Building Pages repo into %s" % OUT)
@@ -96,28 +117,26 @@ def main():
     # from trying to process the tree.
     open(os.path.join(OUT, ".nojekyll"), "w").close()
     repo_ver = addon_version(os.path.join(SRC, "repository.relay"))
-    with open(os.path.join(OUT, "index.html"), "w", encoding="utf-8") as fh:
-        fh.write(
-            "<!DOCTYPE html><html><head><meta charset='utf-8'>"
-            "<title>Relay Repository</title></head><body>"
-            "<h1>Relay Repository</h1>"
-            "<p>Your streaming companion - a Stremio&harr;Kodi bridge.</p>"
-            "<p><b>Install:</b> add this URL as a Kodi file source, then install "
-            "<code>zips/repository.relay/repository.relay-%s.zip</code>, "
-            "then install Relay from the repository.</p>"
-            "<ul>"
-            "<li><a href='zips/repository.relay/repository.relay-%s.zip'>repository.relay-%s.zip</a></li>"
-            "<li><a href='addons.xml'>addons.xml</a> &middot; "
-            "<a href='addons.xml.md5'>addons.xml.md5</a></li>"
-            "</ul>"
-            "<hr><p style='font-size:0.85em;color:#666;max-width:48em'>"
-            "Relay is an independent project and is <b>not affiliated with, "
-            "endorsed by, or associated with</b> the Kodi/XBMC Foundation or "
-            "Stremio. It ships <b>no media, content or stream sources</b> - it "
-            "only presents add-ons that you choose to install. Do not use it for "
-            "piracy or to access content you are not authorised to. "
-            "Licensed under GPL-3.0-or-later.</p>"
-            "</body></html>\n" % (repo_ver, repo_ver, repo_ver))
+    # Per-directory listings so Kodi can browse root -> zips -> <id> -> zip.
+    for addon_id in ADDONS:
+        write_dir_index(os.path.join(ZIPS, addon_id))
+    write_dir_index(ZIPS)
+    root_header = (
+        "<h1>Relay Repository</h1>"
+        "<p>Your streaming companion - a Stremio&harr;Kodi bridge.</p>"
+        "<p><b>Install:</b> in Kodi add this URL as a file source, then "
+        "<i>Install from zip file</i> &rarr; this source &rarr; "
+        "<code>zips/</code> &rarr; <code>repository.relay/</code> &rarr; "
+        "<code>repository.relay-%s.zip</code>, then install Relay from the "
+        "repository.</p>"
+        "<hr><p style=\"font-size:0.85em;color:#666;max-width:48em\">"
+        "Relay is an independent project and is <b>not affiliated with, "
+        "endorsed by, or associated with</b> the Kodi/XBMC Foundation or "
+        "Stremio. It ships <b>no media, content or stream sources</b> - it "
+        "only presents add-ons that you choose to install. Do not use it for "
+        "piracy or to access content you are not authorised to. "
+        "Licensed under GPL-3.0-or-later.</p><hr>" % repo_ver)
+    write_dir_index(OUT, header=root_header)
     print("addons.xml md5: %s" % md5)
     print("Done. Serve docs/ via GitHub Pages.")
 
