@@ -24,7 +24,7 @@
 </addon>
 <addon id="script.module.relay"
        name="Relay Library"
-       version="0.1.5"
+       version="0.1.6"
        provider-name="aziz66">
   <requires>
     <import addon="xbmc.python" version="3.0.0"/>
@@ -40,13 +40,13 @@
 v0.1.4 - Finished episodes are now recorded as watched in your Stremio account (the per-episode watched bitfield), not just advanced in Continue Watching - so episode checkmarks appear automatically (matches stremio-core completion).</news>
     <disclaimer lang="en_GB">Relay is an independent project and is not affiliated with, endorsed by, or associated with the Kodi/XBMC Foundation or Stremio. It ships no media, content or stream sources - it only presents add-ons that you choose to install. Do not use it for piracy or to access content you are not authorised to.</disclaimer>
     <assets>
-      <icon>resources/icon.png</icon>
+      <icon>icon.png</icon>
     </assets>
   </extension>
 </addon>
 <addon id="plugin.video.relay"
        name="Relay"
-       version="0.1.13"
+       version="0.1.14"
        provider-name="aziz66">
   <requires>
     <import addon="xbmc.python" version="3.0.0"/>
@@ -67,13 +67,13 @@ v0.1.4 - Finished episodes are now recorded as watched in your Stremio account (
 v0.1.12 - GPL license, disclaimer; Trakt now needs your own app (see README).</news>
     <disclaimer lang="en_GB">Relay is an independent project and is not affiliated with, endorsed by, or associated with the Kodi/XBMC Foundation or Stremio. It ships no media, content or stream sources - it only presents add-ons that you choose to install. Do not use it for piracy or to access content you are not authorised to.</disclaimer>
     <assets>
-      <icon>resources/icon.png</icon>
+      <icon>icon.png</icon>
     </assets>
   </extension>
 </addon>
 <addon id="service.subtitles.relay"
        name="Relay Subtitles"
-       version="0.1.14"
+       version="0.1.15"
        provider-name="aziz66">
   <requires>
     <import addon="xbmc.python" version="3.0.0"/>
@@ -90,7 +90,7 @@ v0.1.12 - GPL license, disclaimer; Trakt now needs your own app (see README).</n
     <news>v0.1.14 - GPL license, disclaimer; Cinemeta filename resolver; boot-race retry.</news>
     <disclaimer lang="en_GB">Relay is an independent project and is not affiliated with, endorsed by, or associated with the Kodi/XBMC Foundation or Stremio. It ships no media, content or stream sources - it only presents add-ons that you choose to install. Do not use it for piracy or to access content you are not authorised to.</disclaimer>
     <assets>
-      <icon>resources/icon.png</icon>
+      <icon>icon.png</icon>
     </assets>
   </extension>
 </addon>
