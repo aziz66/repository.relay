@@ -149,6 +149,11 @@ returning JSON:
 - **`ts`** — UNIX epoch seconds of the click. Relay ignores anything **older than
   120 s**, so the file must reflect the *most recent* click.
 
+**A ready-to-run reference implementation is included** in [`capture/`](capture/)
+(`capture.py`, stdlib-only — run it, register its `/manifest.json`, set the
+Capture URL). See [`capture/README.md`](capture/README.md) for full instructions.
+If you'd rather build your own, the contract is below.
+
 How you populate `last.json` is up to you. The usual approach is a tiny `stream`
 add-on (serving `/manifest.json` with `"resources": ["stream"]` and
 `"idPrefixes": ["tt","kitsu"]`) that returns **no** streams but records each
