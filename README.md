@@ -115,6 +115,53 @@ One-time, ~2 minutes:
 That's it — Relay will then scrobble your playback (history + resume progress) to
 your Trakt account. Skip this section entirely if you don't use Trakt.
 
+## Capture add-on (optional, advanced)
+
+**You almost certainly don't need this.** Relay identifies external playback
+(Stremio/Nuvio → Kodi) from the stream URL, the release name (via Cinemeta), and
+your Stremio account. The capture add-on is a last-resort hook for the rare case
+where *none* of those work — e.g. a debrid source whose URL embeds no id and whose
+filename is unrecognisable, and you're not signed into Stremio.
+
+It is **off by default** and Relay ships **only the client side** — you self-host
+the capture endpoint yourself. To enable it: in Kodi set the settings level to
+**Expert** (bottom-left of the settings screen), then **Relay Subtitles →
+Settings → Capture URL** and enter your endpoint's base URL. Leave it blank to
+disable.
+
+**What the endpoint must do.** A capture endpoint is a tiny self-hosted service
+(typically a minimal Stremio add-on) that records the exact id at the moment a
+stream is clicked, and exposes it at:
+
+```
+GET  <capture_url>/last.json
+```
+
+returning JSON:
+
+```json
+{ "id": "tt1234567", "type": "movie", "ts": 1782478290 }
+```
+
+- **`id`** — the Stremio id of what was just launched: `tt…` for a movie,
+  `tt…:S:E` for a series episode (e.g. `tt0903747:1:4`); `kitsu:…` ids also work.
+- **`type`** *(optional)* — `"movie"` or `"series"`; inferred from the id when omitted.
+- **`ts`** — UNIX epoch seconds of the click. Relay ignores anything **older than
+  120 s**, so the file must reflect the *most recent* click.
+
+How you populate `last.json` is up to you. The usual approach is to install the
+capture endpoint as an extra Stremio add-on that declares a `stream` resource; when
+Stremio requests streams for a title (i.e. you opened it), your service writes that
+request's `{id, type, ts}` to `last.json` before returning. Record the **first**
+request of a click and ignore rapid follow-ups, since Stremio pre-fetches the next
+episode's streams immediately after a click (otherwise `last.json` can end up
+pointing at the *next* episode). Relay also filters out its own next-episode
+prefetch automatically.
+
+Because the endpoint is queried over the network on each external launch, host it
+on your LAN and keep it fast; `last.json` should respond in well under the 4 s
+Relay allows.
+
 ## Notes
 
 - **Trakt** requires the one-time app setup above (Relay intentionally ships **no**
