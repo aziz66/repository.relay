@@ -132,7 +132,8 @@ def run():
     player = xbmc.Player()
     cur_file = None        # the file currently being tracked
     seen_at = 0.0          # when we first saw cur_file (bounds the retry window)
-    done = False           # finished processing cur_file (identified or gave up)
+    done = False           # finished processing cur_file (identified + sub settled)
+    warmed = False         # OSD enrich + next-episode prefetch already done
     oshash_done = False    # moviehash subtitle fallback already tried for cur_file
     last_gen = None
     while not mon.abortRequested():
@@ -155,6 +156,7 @@ def run():
             cur_file = cur
             seen_at = time.time()
             done = False
+            warmed = False
             oshash_done = False
         if done:
             continue
@@ -168,19 +170,32 @@ def run():
 
         ctype, cid = _resolve_id(mon, 2)
         if cid:
-            done = True
-            try:  # push real title + art to the OSD for external playback
-                svc.enrich_osd(player, ctype, cid)
-            except Exception as exc:  # noqa
-                svc.log("enrich_osd error: %r" % exc)
-            if _enabled():
-                pref = _preferred_langs()
-                if pref and not _have_preferred(player, pref):
-                    try:
-                        _fetch(player, ctype, cid, pref)
-                    except Exception as exc:  # noqa - never kill the loop
-                        svc.log("autodownload error: %r" % exc)
-            _prefetch_next(ctype, cid)  # warm next episode for instant binge
+            if not warmed:   # once per file: OSD enrich + next-episode prefetch
+                warmed = True
+                try:  # push real title + art to the OSD for external playback
+                    svc.enrich_osd(player, ctype, cid)
+                except Exception as exc:  # noqa
+                    svc.log("enrich_osd error: %r" % exc)
+                _prefetch_next(ctype, cid)  # warm next episode for instant binge
+            if not _enabled():
+                done = True
+                continue
+            pref = _preferred_langs()
+            if not pref or _have_preferred(player, pref):
+                done = True          # nothing to fetch, or already satisfied
+                continue
+            got = False
+            try:
+                got = _fetch(player, ctype, cid, pref)
+            except Exception as exc:  # noqa - never kill the loop
+                svc.log("autodownload error: %r" % exc)
+            # RETRY until a preferred sub actually loads (or the window elapses).
+            # On a binge into the next episode the subtitle add-on can be a beat
+            # behind, so the FIRST get_subtitles can return nothing usable -
+            # without this retry the episode keeps Kodi's embedded (often forced)
+            # auto-pick instead of the user's language.
+            if got or time.time() - seen_at >= ID_RETRY_WINDOW:
+                done = True
             continue
 
         # No id yet. Run the OpenSubtitles moviehash subtitle fallback ONCE, then
