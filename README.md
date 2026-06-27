@@ -149,13 +149,17 @@ returning JSON:
 - **`ts`** — UNIX epoch seconds of the click. Relay ignores anything **older than
   120 s**, so the file must reflect the *most recent* click.
 
-How you populate `last.json` is up to you. The usual approach is to install the
-capture endpoint as an extra Stremio add-on that declares a `stream` resource; when
-Stremio requests streams for a title (i.e. you opened it), your service writes that
-request's `{id, type, ts}` to `last.json` before returning. Record the **first**
-request of a click and ignore rapid follow-ups, since Stremio pre-fetches the next
-episode's streams immediately after a click (otherwise `last.json` can end up
-pointing at the *next* episode). Relay also filters out its own next-episode
+How you populate `last.json` is up to you. The usual approach is a tiny `stream`
+add-on (serving `/manifest.json` with `"resources": ["stream"]` and
+`"idPrefixes": ["tt","kitsu"]`) that returns **no** streams but records each
+incoming stream request's `{id, type, ts}`. Register it wherever your stream
+requests flow — directly in your Stremio client's add-ons, or in a stream
+aggregator such as **AIOStreams** as a custom add-on — so it's called with the
+real `type`+`id` whenever you open a title. Record the **first** request of a
+click and ignore rapid follow-ups, since Stremio/AIOStreams pre-fetch the next
+episode's streams within seconds of a click (otherwise `last.json` ends up
+pointing at the *next* episode); a simple "ignore requests less than ~60 s after
+the previous one" anchor does this. Relay also filters out its own next-episode
 prefetch automatically.
 
 Because the endpoint is queried over the network on each external launch, host it
