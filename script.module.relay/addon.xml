@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="script.module.relay"
        name="Relay Library"
-       version="0.1.7"
+       version="0.1.8"
        provider-name="aziz66">
   <requires>
     <import addon="xbmc.python" version="3.0.0"/>
@@ -13,7 +13,8 @@
     <description lang="en_GB">Common library used by plugin.video.relay and service.subtitles.relay. Indexes Stremio addon manifests and routes catalog/meta/stream/subtitles requests by declared resource, type and idPrefix.</description>
     <platform>all</platform>
     <license>GPL-3.0-or-later</license>
-    <news>v0.1.7 - Fix Stremio account login/sync on iOS/tvOS: account HTTP now uses the requests session's bundled CA (certifi) instead of bare urllib, which had no CA bundle on Apple platforms and failed TLS (every account call - login, progress, watched, Continue Watching).
+    <news>v0.1.8 - Fix the add-on crashing on Apple TV (tvOS): inject a _scproxy stub so importing urllib.request doesn't fail on tvOS Python (no _scproxy module) - that crash stopped Relay loading entirely.
+v0.1.7 - Fix Stremio account login/sync on iOS/tvOS: account HTTP now uses the requests session's bundled CA (certifi) instead of bare urllib, which had no CA bundle on Apple platforms and failed TLS (every account call - login, progress, watched, Continue Watching).
 v0.1.5 - Harden the watched-bitfield write so a stale/partial meta can never wipe a show's existing episode checkmarks.
 v0.1.4 - Finished episodes are now recorded as watched in your Stremio account (the per-episode watched bitfield), not just advanced in Continue Watching - so episode checkmarks appear automatically (matches stremio-core completion).</news>
     <disclaimer lang="en_GB">Relay is an independent project and is not affiliated with, endorsed by, or associated with the Kodi/XBMC Foundation or Stremio. It ships no media, content or stream sources - it only presents add-ons that you choose to install. Do not use it for piracy or to access content you are not authorised to.</disclaimer>

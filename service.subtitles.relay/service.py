@@ -23,6 +23,7 @@ import sys
 import tempfile
 import time
 import zipfile
+from relay import _compat  # noqa: F401 - inject _scproxy stub BEFORE urllib.request (iOS/tvOS)
 from urllib.parse import urlencode, parse_qsl, urlsplit
 from urllib.request import Request, urlopen
 
