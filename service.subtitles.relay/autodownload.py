@@ -42,7 +42,9 @@ def _preferred_langs():
         vals = []
     out = set()
     for v in vals:
-        out.add(xbmc.convertLanguage(v, xbmc.ENGLISH_NAME) or v)
+        # Lower-case: on tvOS xbmc.convertLanguage returns "arabic" while the
+        # sub names resolve to "Arabic" - compare case-insensitively everywhere.
+        out.add((xbmc.convertLanguage(v, xbmc.ENGLISH_NAME) or v).lower())
     return out
 
 
@@ -52,7 +54,7 @@ def _have_preferred(player, pref):
     except Exception:  # noqa
         streams = []
     for s in streams:
-        if (xbmc.convertLanguage(s, xbmc.ENGLISH_NAME) or s) in pref:
+        if (xbmc.convertLanguage(s, xbmc.ENGLISH_NAME) or s).lower() in pref:
             return True
     return False
 
@@ -71,14 +73,18 @@ def _resolve_id(mon, ticks):
 def _fetch(player, ctype, cid, pref):
     subs = router.get_subtitles(ctype, cid, extra=svc.sub_extra(),
                                 verify_ssl=svc.verify_ssl())
+    svc.log("autodownload: %d subtitle(s) for %s; want %s; langs=%s"
+            % (len(subs), cid, sorted(pref),
+               sorted({svc._english_name(s.get("lang", "")) or s.get("lang", "?")
+                       for s in subs})[:12]))
 
     def rank(s):
-        eng = svc._english_name(s.get("lang", ""))
+        eng = svc._english_name(s.get("lang", "")).lower()
         return (0 if (eng and eng in pref) else 1, 0 if s.get("sync") else 1)
 
     for s in sorted(subs, key=rank):
         eng = svc._english_name(s.get("lang", ""))
-        if pref and eng and eng not in pref:
+        if pref and eng and eng.lower() not in pref:
             continue
         if not s.get("url"):
             continue
@@ -87,6 +93,8 @@ def _fetch(player, ctype, cid, pref):
             player.setSubtitles(path)
             svc.log("auto-downloaded subtitle (%s)" % (eng or s.get("lang", "?")))
             return True
+        svc.log("autodownload: download_to_temp failed for %s" % (eng or s.get("lang", "?")))
+    svc.log("autodownload: no downloadable match among %d subtitle(s)" % len(subs))
     return False
 
 

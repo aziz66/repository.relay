@@ -595,7 +595,7 @@ def _list_oshash(wanted):
     log("OpenSubtitles moviehash search: %d result(s)" % len(items))
     for s in items:
         eng = _english_name(s["lang"]) or s["lang"] or "Unknown"
-        if wanted and eng and eng not in wanted:
+        if wanted and eng and eng.lower() not in wanted:
             continue
         li = xbmcgui.ListItem(label=eng, label2=(s.get("release") or "")[:70])
         if s["lang"]:
@@ -620,7 +620,7 @@ def oshash_autodownload(player, pref):
                                  for n in pref) if c})
     for s in opensubs.search_by_hash(url, langs2):
         eng = _english_name(s["lang"])
-        if pref and eng and eng not in pref:
+        if pref and eng and eng.lower() not in pref:
             continue
         path = download_to_temp("osfileid:%s" % s["file_id"], s["lang"])
         if path:
@@ -634,7 +634,7 @@ def do_search(params):
     ctype, content_id = current_video()
     # Normalise the user's wanted languages to canonical English names too, so
     # "Arabic"/"arabic"/"ara" all compare equal.
-    wanted = {_english_name(n) or n for n in _lang_names(params.get("languages"))}
+    wanted = {(_english_name(n) or n).lower() for n in _lang_names(params.get("languages"))}
 
     if not content_id:
         _list_oshash(wanted)  # external player / junk filename -> moviehash
@@ -655,7 +655,7 @@ def do_search(params):
         eng = _english_name(lang)
         # Only drop when we resolved a real language that the user didn't ask
         # for; keep unrecognised languages rather than silently hiding them.
-        if wanted and eng and eng not in wanted:
+        if wanted and eng and eng.lower() not in wanted:
             continue
 
         li = xbmcgui.ListItem(label=eng or lang or "Unknown",

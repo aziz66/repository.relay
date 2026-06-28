@@ -76,7 +76,7 @@ v0.1.12 - GPL license, disclaimer; Trakt now needs your own app (see README).</n
 </addon>
 <addon id="service.subtitles.relay"
        name="Relay Subtitles"
-       version="0.1.19"
+       version="0.1.20"
        provider-name="aziz66">
   <requires>
     <import addon="xbmc.python" version="3.0.0"/>
@@ -90,7 +90,8 @@ v0.1.12 - GPL license, disclaimer; Trakt now needs your own app (see README).</n
     <description lang="en_GB">During playback, searches every configured Stremio addon that declares a 'subtitles' resource (shared with Relay) for the currently playing IMDB title and offers the results in Kodi's subtitle dialog.</description>
     <platform>all</platform>
     <license>GPL-3.0-or-later</license>
-    <news>v0.1.19 - tvOS load fix: import the _scproxy compat shim before urllib.request.
+    <news>v0.1.20 - Fix subtitle language matching on Apple TV (tvOS): compare languages case-insensitively. tvOS's convertLanguage returns 'arabic' (lower) while sub names resolve to 'Arabic', so the preferred language never matched and nothing auto-downloaded.
+v0.1.19 - tvOS load fix: import the _scproxy compat shim before urllib.request.
 v0.1.18 - Auto-download now RETRIES the subtitle search (within the id window) instead of giving up after one try, so a binge into the next episode reliably loads your language instead of keeping Kodi's embedded forced track.
 v0.1.17 - URL-decode the playing filename before parsing (AIOStreams &amp; other sources percent-encode it), so titles like "The Punisher One Last Kill" resolve.
 v0.1.16 - Better filename identification: strip scene site-tags and accept a Cinemeta match on year + name-contained-in-filename, so messy release names (e.g. "...A Marvel Television Special Presentation -- The Punisher One Last Kill 2026...") resolve. Icon at add-on root.
