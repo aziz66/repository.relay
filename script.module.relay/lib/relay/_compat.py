@@ -23,3 +23,27 @@ if "_scproxy" not in sys.modules:
         _stub._get_proxy_settings = lambda *a, **k: {"exclude_simple": True,
                                                      "exceptions": []}
         sys.modules["_scproxy"] = _stub
+
+
+# iOS/tvOS Kodi's Python has NO system CA bundle, so any default-context HTTPS
+# via bare urllib (subtitle file downloads, Trakt, IntroDB, OpenSubtitles) fails
+# TLS verification there - while requests works because it bundles certifi.
+# Point ssl's default contexts at certifi's CA so bare-urllib HTTPS verifies too.
+# No-op on platforms that already have a CA store (certifi is still a valid CA
+# set). Safe-guarded so a missing certifi never breaks import.
+try:
+    import ssl as _ssl
+    import certifi as _certifi
+
+    _ca = _certifi.where()
+    _orig_ctx = _ssl.create_default_context
+
+    def _certifi_default_context(*a, **k):
+        if not (k.get("cafile") or k.get("capath") or k.get("cadata")):
+            k["cafile"] = _ca
+        return _orig_ctx(*a, **k)
+
+    _ssl.create_default_context = _certifi_default_context
+    _ssl._create_default_https_context = _certifi_default_context
+except Exception:  # noqa - never break import over a CA shim
+    pass
