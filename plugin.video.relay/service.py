@@ -645,9 +645,27 @@ class Scrobbler(xbmc.Player):
             trakt.scrobble("start", self.ctype, self.cid, self.progress)
 
     def _return_to_stremio(self):
-        if self._external and ADDON.getSetting("return_to_stremio") != "false":
-            app = ADDON.getSetting("return_app").strip() or "com.stremio.one"
-            xbmc.executebuiltin("StartAndroidActivity(%s)" % app)
+        if ADDON.getSetting("return_to_stremio") == "false":
+            self._external = False
+            return
+        app = ADDON.getSetting("return_app").strip()
+        if xbmc.getCondVisibility("System.Platform.Android"):
+            # Android: only bounce back when Kodi was launched as an EXTERNAL
+            # player by the Stremio app (the handoff scenario).
+            if self._external:
+                xbmc.executebuiltin("StartAndroidActivity(%s)"
+                                    % (app or "com.stremio.one"))
+        else:
+            # iOS/tvOS: no external-player handoff exists (playback is in Relay),
+            # so return after any stop. Kodi exposes no app-launch builtin here -
+            # open the app's URL scheme via the Obj-C runtime (osapp).
+            scheme = app if "://" in app else "stremio://"
+            try:
+                from relay import osapp
+                osapp.open_url_scheme(scheme)
+            except Exception as exc:  # noqa
+                xbmc.log("[relay] return-to-app (tvOS) failed: %r" % exc,
+                         xbmc.LOGWARNING)
         self._external = False
 
     def onPlayBackStopped(self):
