@@ -136,20 +136,11 @@ def logout():
 # ---------------------------------------------------------------------------
 
 def _post(path, body):
-    try:
-        data = json.dumps(body).encode("utf-8")
-        req = Request(API + path, data=data,
-                      headers={"Content-Type": "application/json",
-                               "User-Agent": "Kodi-Relay/1.0"})
-        with urlopen(req, timeout=TIMEOUT) as r:
-            return json.loads(r.read().decode("utf-8", "replace") or "{}")
-    except HTTPError as exc:
-        try:
-            return json.loads(exc.read().decode("utf-8", "replace") or "{}")
-        except Exception:  # noqa
-            return {}
-    except (URLError, OSError, ValueError):
-        return {}
+    # Route through client.post_json so account HTTP uses the requests session's
+    # bundled certifi CA when available - bare urllib has no CA bundle on
+    # iOS/tvOS, which made every account call (login, sync, watched, CW) fail
+    # TLS there while browsing (already on requests) worked.
+    return client.post_json(API + path, body, timeout=TIMEOUT)
 
 
 def login(email, password):

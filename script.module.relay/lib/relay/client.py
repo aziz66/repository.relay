@@ -178,6 +178,7 @@ try:
     import requests
     from requests.adapters import HTTPAdapter
 
+    _HAVE_REQUESTS = True
     _SESSION = requests.Session()
     _ADAPTER = HTTPAdapter(pool_connections=8, pool_maxsize=16, max_retries=0)
     _SESSION.mount("http://", _ADAPTER)
@@ -195,6 +196,7 @@ try:
             resp.close()
         return raw, gz
 except ImportError:  # no requests (tests / minimal Kodi) -> urllib
+    _HAVE_REQUESTS = False
     FETCH_ERRORS = (HTTPError, URLError, ValueError, OSError)
 
     def _fetch_raw(url, timeout, verify_ssl):
@@ -205,6 +207,34 @@ except ImportError:  # no requests (tests / minimal Kodi) -> urllib
                 raise ValueError("response exceeds size limit")
             gz = resp.headers.get("Content-Encoding") == "gzip"
         return raw, gz
+
+
+def post_json(url, body, timeout=DEFAULT_TIMEOUT, verify_ssl=True):
+    """POST a JSON ``body`` and return the parsed JSON dict ({} on failure).
+
+    Prefers the requests session (bundled certifi CA store) - essential on
+    iOS/tvOS where Kodi's Python has no system CA bundle, so bare-urllib HTTPS
+    fails TLS verification (e.g. Stremio login). Falls back to urllib when
+    requests is absent. Reads the body even on a 4xx (the Stremio API returns
+    ``{error:{message}}`` there). Never raises."""
+    data = json.dumps(body).encode("utf-8")
+    headers = {"Content-Type": "application/json", "User-Agent": _USER_AGENT}
+    try:
+        if _HAVE_REQUESTS:
+            resp = _SESSION.post(url, data=data, headers=headers,
+                                 timeout=timeout, verify=verify_ssl)
+            txt = resp.text or ""
+            return json.loads(txt) if txt else {}
+        req = Request(url, data=data, headers=headers)
+        with urlopen(req, timeout=timeout, context=_ssl_context(verify_ssl)) as r:
+            return json.loads(r.read().decode("utf-8", "replace") or "{}")
+    except HTTPError as exc:
+        try:
+            return json.loads(exc.read().decode("utf-8", "replace") or "{}")
+        except Exception:  # noqa
+            return {}
+    except Exception:  # noqa - never raise to callers
+        return {}
 
 
 def fetch_json(url, timeout=DEFAULT_TIMEOUT, verify_ssl=True, cache_ttl=0):
