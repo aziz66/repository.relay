@@ -16,6 +16,7 @@ subtitle service publishes after resolving the id via filename / capture / the S
 
 from __future__ import annotations
 
+import re
 import time
 
 import xbmc
@@ -118,6 +119,7 @@ class Scrobbler(xbmc.Player):
         self.progress = 0.0          # percent
         self.cur_time = 0.0          # seconds
         self.cur_total = 0.0
+        self._abnormal_stop = False  # last stop looked like a broken/partial stream
         self._ticks = 0
         self._last_pushed = -1       # last synced position (skip no-op pushes)
         self._resume_pending = None  # (cid, pct) awaiting a settled player
@@ -198,6 +200,29 @@ class Scrobbler(xbmc.Player):
                 self.cur_total = self.getTotalTime()
             except Exception:  # noqa
                 pass
+
+    def _expected_total(self):
+        """Title runtime in seconds from meta (parses '1 h 47 min' / '23 min' /
+        bare minutes); 0 if unknown. Used to sanity-check the stream's own
+        reported duration."""
+        rt = str((self.meta or {}).get("runtime") or "")
+        if not rt:
+            return 0
+        h = re.search(r"(\d+)\s*h", rt)
+        m = re.search(r"(\d+)\s*m", rt)
+        secs = (int(h.group(1)) * 3600 if h else 0) + (int(m.group(1)) * 60 if m else 0)
+        if not secs:
+            d = re.search(r"\d+", rt)   # bare number = minutes
+            secs = int(d.group(0)) * 60 if d else 0
+        return secs
+
+    def _is_abnormal_stop(self):
+        """True when the stream's reported duration is far short of the title's
+        real runtime - i.e. a partial/broken debrid stream that died early, not a
+        genuine finish. Guards against false 'watched' + a spurious return-to-app.
+        No-op (False) when the runtime is unknown."""
+        exp = self._expected_total()
+        return bool(exp and 0 < self.cur_total < exp * 0.6)
 
     # -- resume prompt (per stream, both local AND external playback) --------
 
@@ -476,6 +501,7 @@ class Scrobbler(xbmc.Player):
     def _begin(self, ctype, cid):
         self.ctype = ctype or ("series" if cid.count(":") >= 2 else "movie")
         self.cid = cid
+        self._abnormal_stop = False
         self.progress = self._pct()
         self.cur_time = self.cur_total = 0.0
         self._ticks = 0
@@ -595,9 +621,18 @@ class Scrobbler(xbmc.Player):
         # progress with the new video's ~0% (the run loop keeps it 5s-fresh).
         if snap:
             self._snap()
+        # A partial/broken debrid stream (still caching, wrong container) reports
+        # a duration far short of the title's real runtime and can stop/"end"
+        # early. Treat that as a stream failure, not a genuine finish: don't mark
+        # watched, don't write a bogus resume, and don't bounce to the return-app.
+        self._abnormal_stop = self._is_abnormal_stop()
+        if self._abnormal_stop:
+            xbmc.log("[relay] abnormal stop: stream total %ds << expected %ds - "
+                     "skipping watched/progress/return"
+                     % (int(self.cur_total), self._expected_total()), xbmc.LOGINFO)
         if self.trakt_on:
             trakt.scrobble("stop", self.ctype, self.cid, self.progress)
-        if self.stremio_on and self.cid:
+        if self.stremio_on and self.cid and not self._abnormal_stop:
             try:
                 if self.progress >= stremio_api.WATCHED_COEF * 100.0:
                     stremio_api.mark_watched(self.ctype, self.cid, self.meta)
@@ -645,7 +680,9 @@ class Scrobbler(xbmc.Player):
             trakt.scrobble("start", self.ctype, self.cid, self.progress)
 
     def _return_to_stremio(self):
-        if ADDON.getSetting("return_to_stremio") == "false":
+        if ADDON.getSetting("return_to_stremio") == "false" or self._abnormal_stop:
+            # never bounce to the app on a broken/partial-stream stop (it looks
+            # like the stream "ended" but the user is mid-watch).
             self._external = False
             return
         app = ADDON.getSetting("return_app").strip()
@@ -688,7 +725,7 @@ class Scrobbler(xbmc.Player):
         self._stop()
         self._clear_stash()
         self._clear_external()
-        if nxt:
+        if nxt and not self._abnormal_stop:  # don't auto-binge off a broken stream
             self._play_next(nxt, label)
             return  # don't bounce to Stremio mid-binge
         self._return_to_stremio()
