@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="plugin.video.relay"
        name="Relay"
-       version="0.1.17"
+       version="0.1.18"
        provider-name="aziz66">
   <requires>
     <import addon="xbmc.python" version="3.0.0"/>
@@ -18,7 +18,8 @@
     <description lang="en_GB">Add the manifest URL of any Stremio addon (catalog/meta/stream). Relay reads each manifest's declared resources and presents catalogs, metadata and streams natively in Kodi. Subtitles are handled by the companion service.subtitles.relay.</description>
     <platform>all</platform>
     <license>GPL-3.0-or-later</license>
-    <news>v0.1.17 - Don't bounce to the return-app on stop while an arvio Remote is driving Kodi from a phone/tablet (Cast mode): Relay detects the live web-server client and skips the return-to-app so the remote keeps controlling. All other stops (on-device handoff, local playback) unchanged.
+    <news>v0.1.18 - arvio Remote (Cast) suppression now uses a heartbeat: while a phone/tablet drives Kodi it emits a JSONRPC.NotifyAll heartbeat, and Relay skips the return-to-app on stop while that heartbeat is fresh. Replaces the 0.1.17 /proc socket check, which Android SELinux blocks for the Kodi app. Other stops (on-device handoff, local playback) unchanged.
+v0.1.17 - Don't bounce to the return-app on stop while an arvio Remote is driving Kodi from a phone/tablet (Cast mode): Relay detects the live web-server client and skips the return-to-app so the remote keeps controlling. All other stops (on-device handoff, local playback) unchanged.
 v0.1.16 - Don't mark-watched or bounce to the return-app when a partial/broken stream stops early (its reported duration is far short of the title's real runtime) - fixes a flaky stream kicking you back to the launcher mid-watch.
 v0.1.15 - Return-to-app is now OS-aware: Android uses StartAndroidActivity (external handoff, unchanged); Apple TV/tvOS opens the app's URL scheme (e.g. stremio://) on stop.
 v0.1.13 - Skip / Up Next / Movie-end prompts now highlight the override button (one press flips it; wait it out for the timeout default), matching the resume prompt.
