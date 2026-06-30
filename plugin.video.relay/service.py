@@ -16,6 +16,7 @@ subtitle service publishes after resolving the id via filename / capture / the S
 
 from __future__ import annotations
 
+import json
 import re
 import time
 
@@ -80,6 +81,57 @@ def _movie_end_enabled():
 
 def _movie_end_secs():
     return _setting_int("upnext_movie_secs", 60)
+
+
+def _kodi_setting(setting_id):
+    """Read a Kodi *system* setting (e.g. services.webserver) via JSON-RPC.
+    Returns None on any error."""
+    try:
+        resp = json.loads(xbmc.executeJSONRPC(json.dumps({
+            "jsonrpc": "2.0", "id": 1, "method": "Settings.GetSettingValue",
+            "params": {"setting": setting_id}})))
+        return resp.get("result", {}).get("value")
+    except Exception:  # noqa
+        return None
+
+
+def _remote_client_active(webserver_port):
+    """True if some client currently holds an ESTABLISHED TCP connection to
+    Kodi's web server. Same-uid readable because Relay runs inside Kodi's
+    process. Android-only signal - /proc/net/tcp doesn't exist on iOS/tvOS,
+    where this just returns False (normal fallback runs)."""
+    target = "%04X" % int(webserver_port)          # 8080 -> "1F90"
+    for path in ("/proc/net/tcp", "/proc/net/tcp6"):
+        try:
+            with open(path) as f:
+                next(f, None)                      # skip header row
+                for line in f:
+                    cols = line.split()
+                    if len(cols) < 4:
+                        continue
+                    local_addr, state = cols[1], cols[3]   # state 01 = ESTABLISHED
+                    if state == "01" and local_addr.rsplit(":", 1)[-1].upper() == target:
+                        return True
+        except (OSError, ValueError):
+            pass
+    return False
+
+
+def _arvio_remote_controlling(checks=3, gap=0.3):
+    """True when an arvio Remote is actively driving Kodi from another device
+    (it casts via Player.Open and keeps polling Kodi's web server while its
+    Remote screen is open, including after Stop). Runs only at stop time - no
+    background loop; the few retries absorb a momentary OkHttp socket reopen.
+    No-ops to False when the web server is off (then there can be no remote)."""
+    if _kodi_setting("services.webserver") is not True:
+        return False
+    port = _kodi_setting("services.webserverport") or 8080
+    for i in range(checks):
+        if _remote_client_active(port):
+            return True
+        if i < checks - 1:
+            time.sleep(gap)
+    return False
 
 
 def _ask(title, subtitle, primary, secondary, timeout_ms, back="secondary",
@@ -688,8 +740,11 @@ class Scrobbler(xbmc.Player):
         app = ADDON.getSetting("return_app").strip()
         if xbmc.getCondVisibility("System.Platform.Android"):
             # Android: only bounce back when Kodi was launched as an EXTERNAL
-            # player by the Stremio app (the handoff scenario).
-            if self._external:
+            # player by the Stremio app (the handoff scenario)...
+            # ...but NOT when an arvio Remote is driving Kodi from a phone/tablet
+            # (Cast mode also looks "external", yet returning to the app on the
+            # Shield would yank Kodi away from the still-controlling remote).
+            if self._external and not _arvio_remote_controlling():
                 xbmc.executebuiltin("StartAndroidActivity(%s)"
                                     % (app or "com.stremio.one"))
         else:
